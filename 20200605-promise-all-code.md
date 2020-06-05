@@ -1,7 +1,5 @@
 # promise-all-code
 
-> 参考链接：https://blog.csdn.net/qq_41409353/java/article/details/105524162
-
 ### 题目
 
 promise.all代码实现
