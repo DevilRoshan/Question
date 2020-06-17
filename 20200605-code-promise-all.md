@@ -1,4 +1,4 @@
-# promise-all-code
+# code-promise-all
 
 ### 题目
 
