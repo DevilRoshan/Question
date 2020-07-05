@@ -2,7 +2,7 @@
 
 ### 题目
 
-touch事件中的touches、targetTouches和changedTouches详解
+touch事件中的touches、targetTouches和changedTouches
 
 
 
