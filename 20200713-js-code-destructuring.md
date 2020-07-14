@@ -1,4 +1,4 @@
-# js-code-destructuring3
+# js-code-destructuring
 
 > 出自小程序前端面试星球
 
