@@ -35,7 +35,5 @@ console.log(a.b) // undefined
 
 
 
-
-
 ### 思考
 
