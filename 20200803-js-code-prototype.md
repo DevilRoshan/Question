@@ -1,6 +1,8 @@
 # js-code-prototype
 
 > 出自小程序前端面试星球
+>
+> 参考链接：https://github.com/DevilRoshan/Question/blob/master/20200803-js-code-prototype.md
 
 ### 题目
 
