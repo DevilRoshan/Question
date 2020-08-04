@@ -47,7 +47,7 @@ typescript可以通过多种方式继承到项目中
 * 全局安装：` npm install -g typescript`，然后`tsc`命令编译
 * 项目安装：` npm install typescript --dev`，然后项目目录下`tsc`命令编译
 * webpack编译typescript：`npm install --save-dev typescript ts-loader`，配置`ts-loader`
-* 另外，一些脚手架中也会自带对typescript的支持，比如vue3.0，umi等
+* 另外，一些脚手架中也会自带对typescript的支持，比如vue3.0，umi3.0等
 
 安装以后，可以通过配置文件对编译时的操作进行配置
 
@@ -80,7 +80,7 @@ const und2: undefined = undefined
 ```typescript
 // 对象，一般不这样声明，而是使用接口
 const obj: {key1: string, key2: number} = {key1: '111', key2: 111}
-// 数组，两种声明方式都可以，但是一般使用第一种，<T>,T为任意类型，类似泛型的写法
+// 数组，两种声明方式都可以，但是一般使用第一种，<T>,T为任意类型，泛型的写法
 const arr: Array<number> = [1,2,3]
 const arr: number[] = [1,2,3]
 // 元组，规定了长度和每项的类型，与数组类似
@@ -104,7 +104,7 @@ enum enumData {
   b = '3', // '3' 
   c = '4', // '4'
 }
-// 声明枚举之后就可以通过键去访问值，也可以通过值去访问键
+// 声明枚举之后就可以通过键去访问值，也可以通过值去访问键 enumData[1] = 'a' enumData.a = 1
 // 但是通过值去访问键这个功能会带来额外的编译
 // 如果不需要通过值去访问键，那么就在enum前加上const
 const enum enumData {
@@ -219,8 +219,8 @@ function getMin<T>(arr: Array<T>): T{
   return min;
 }
  
-console.log(getMin([1, 3, 5, 7, 8]));
-console.log(getMin(["tom","jerry","jack","sunny"]));
+console.log(getMin<number>([1, 3, 5, 7, 8]));
+console.log(getMin<number>(["tom","jerry","jack","sunny"]));
 ```
 
 ### typescript应用
