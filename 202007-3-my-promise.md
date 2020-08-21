@@ -241,7 +241,7 @@ MyPromise.race = function (arr) {
 * 如果是一个普通纸则返回包裹这个值的一个新promise实例，状态为完成
 
 ```javascript
-Promise.resolve = function (value) {
+MyPromise.resolve = function (value) {
 	if (value instanceof MyPromise) {
 		return value
 	}
@@ -257,7 +257,7 @@ Promise.resolve = function (value) {
 * 如果是一个普通纸则返回包裹这个值的一个新promise实例，状态为拒绝
 
 ```javascript
-Promise.resolve = function (value) {
+MyPromise.reject = function (value) {
 	if (value instanceof MyPromise) {
 		return value
 	}
