@@ -1,4 +1,4 @@
-# js-code-reduce
+# js-code-object
 
 > 出自小程序前端面试星球
 
