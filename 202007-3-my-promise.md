@@ -5,6 +5,8 @@
 > https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 >
 > https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Using_promises
+>
+> 代码位置：'./code/202007-3-my-promise.js'
 
 `Promise`是一个对象，代表了一个异步操作的最终完成或者失败。本质上`Promise`是构造函数`Promise`返回的对象，我们在生成实例时，在这个对象上绑定回调函数，使其能够根据自己的状态执行对应的操作
 
