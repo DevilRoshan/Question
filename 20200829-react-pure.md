@@ -4,7 +4,7 @@
 
 ### 题目
 
-React.Component和React.PureComponent
+React.Component和React.PureComponent的区别
 
 
 

@@ -2,7 +2,7 @@
 
 > VueRouter官网：https://router.vuejs.org/zh/
 
-
+VueRouter是Vue生态中前端路由部分，关于前端路由的原理在以前已经总计而过了，这里是使用Vue的API完成Vue中前端路由的插件实现
 
 ## VueRouter使用
 
@@ -112,31 +112,184 @@ const router = new VueRouter({
 
 当用户操作浏览器的回退按钮时，因为是单页面，所以组件并不会刷新，所以要拦截这个事件，进行组件切换
 
-
-
 ## 编写VueRouter
 
-
+使用Vue的API完成上述路由功能
 
 ### 注册
 
+#### 注册组件
 
+Vue.use注册组件，如果参数是一个对象，则需要有一个`install`方法，如果是一个方法，则直接执行，所以这里要有一个静态方法install
+
+使用Vue.mixin，将router对象混入vue实例，其他地方可能会拿不到
+
+```javascript
+static install(Vue) {
+  // 1 判断当前插件是否安装
+  if(VueRouter.install.installed){
+    return;
+  }
+  VueRouter.install.installed = true
+  // 2 把Vue的构造函数记录在全局
+  _Vue = Vue;
+  // 3 把创建Vue的实例传入的router对象注入Vue实例
+  // 使用Vue.mixin
+  _Vue.mixin({
+    beforeCreate(){
+      if(this.$options.router){
+        _Vue.prototype.$router = this.$options.router;
+        this.$options.router.init()
+      }
+    }
+  })
+}
+```
+
+#### 声明状态
+
+options保存配置
+
+routeMap保存路径与组件的对应关系
+
+nameMap保存name字段和路径的对应关系
+
+data为双向绑定的数据，存储当前选中的路由
+
+init是其他方法的整合方法
+
+```javascript
+constructor(options){
+  this.options = options;
+  this.routeMap = {};
+  this.nameMap = {};
+  this.mode = options.mode
+  // observable
+  this.data = _Vue.observable({
+    current: "/"
+  })
+}
+
+init() {
+  this.createRouteMap();
+  this.initComponent(_Vue);
+  this.initEvent();
+}
+```
+
+#### 生成路由表
+
+根据路径拿到组件，根据name拿到路径
+
+```javascript
+createRouteMap(){
+  this.options.routes.forEach(route => {
+    this.routeMap[route.path] = route.component
+    this.nameMap[route.name] = route.path
+  })
+}
+```
 
 ### 组件
 
+主要分为两个组件分别是`router-link`和`router-view`
 
+#### router-link
+
+负责跳转，替换a标签，原理是拦截原a标签的操作，改为使用historyAPI，修改双向绑定的data数据
+
+* 使用Vue.component生成组件
+* 使用render渲染组件dom
+* 使用hsitoryAPI，history.pushState进行路由更换
+
+#### router-view
+
+负责显示组件，当路由切换是跟换显示的组件，就是根据第一步注册好的routeMap和选中的路由，展示对应组件
+
+```javascript
+initComponent(Vue){
+    let mode = this.mode
+    Vue.component("router-link", {
+      props: {
+        to: String
+      },
+      render(h) {
+        return h("a", {
+          attrs: {
+            href: mode === 'history' ? this.to : `#${this.to}`
+          },
+          on: {
+            click: this.clickHandler
+          }
+        }, [this.$slots.default])
+      },
+      methods: {
+        clickHandler(e) {
+          e.preventDefault()
+          let url = mode === 'history' ? this.to : `#${this.to}`
+          history.pushState({}, "", url)
+          this.$router.data.current = this.to
+        }
+      }
+    })
+    const _this = this;
+    Vue.component("router-view", {
+      render(h){
+        const component = _this.routeMap[_this.data.current]
+        return h(component)
+      }
+    })
+  }
+```
 
 ### 事件
 
+与`router-link`组件的实现方式相同，只不过添加了一些关于参数的判断
 
+```javascript
+const objToSearchUrl = (obj) => Object.keys(obj).reduce((a, b) => `${a}${b}=${![undefined,null].includes(obj[b]) ? obj[b] : ''}&`, `?`).replace(/(&)$/, "");
+
+push({path, query, name, params,}){
+  let url = path, serach = query;
+  if(!url) {
+    url = this.nameMap[name];
+    serach = params
+  }
+  let urlCache = this.mode === 'history' ? url : `#${url}`
+  history.pushState({}, "", `${urlCache}${serach && objToSearchUrl(serach) || ''}`)
+  this.data.current = url
+}
+replace({path, query, name, params,}){
+  let url = path, serach = query;
+  if(!url) {
+    url = this.nameMap[name];
+    serach = params
+  }
+  let urlCache = this.mode === 'history' ? url : `#${url}`
+  history.replaceState({}, "", `${urlCache}${serach && objToSearchUrl(serach) || ''}`)
+  this.data.current = url
+}
+```
 
 ### 模式
 
-
+在`router-link`组件和注册的事件中进行模式的判断，如果是hash路由，则在路由前添加一个#号，在监听的浏览器回退事件中，hash模式读取hash，history读取pathname
 
 ### 其他细节
 
-
-
 #### 浏览器回退按钮
+
+监听popstate事件，这个时间会在浏览器作出操作的时候触发
+
+```javascript
+initEvent() {
+  window.addEventListener("popstate", () => {
+    let key = window.location.hash.slice(1)
+    if(this.mode === 'history'){
+      key = window.location.pathname
+    }
+    this.data.current = key
+  })
+}
+```
 

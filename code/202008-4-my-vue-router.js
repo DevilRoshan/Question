@@ -1,5 +1,8 @@
 /* eslint-disable */
 let _Vue = null;
+
+const objToSearchUrl = (obj) => Object.keys(obj).reduce((a, b) => `${a}${b}=${![undefined,null].includes(obj[b]) ? obj[b] : ''}&`, `?`).replace(/(&)$/, "");
+
 export default class VueRouter {
   static install(Vue) {
     // 1 判断当前插件是否安装
@@ -10,7 +13,6 @@ export default class VueRouter {
     // 2 把Vue的构造函数记录在全局
     _Vue = Vue;
     // 3 把创建Vue的实例传入的router对象注入Vue实例
-    // _Vue.prototype.$router = this.$options.router
     // 使用Vue.mixin
     _Vue.mixin({
       beforeCreate(){
@@ -25,12 +27,32 @@ export default class VueRouter {
   constructor(options){
     this.options = options;
     this.routeMap = {};
+    this.nameMap = {};
     this.mode = options.mode
     // observable
     this.data = _Vue.observable({
       current: "/"
     })
-    this.init()
+  }
+  push({path, query, name, params,}){
+    let url = path, serach = query;
+    if(!url) {
+      url = this.nameMap[name];
+      serach = params
+    }
+    let urlCache = this.mode === 'history' ? url : `#${url}`
+    history.pushState({}, "", `${urlCache}${serach && objToSearchUrl(serach) || ''}`)
+    this.data.current = url
+  }
+  replace({path, query, name, params,}){
+    let url = path, serach = query;
+    if(!url) {
+      url = this.nameMap[name];
+      serach = params
+    }
+    let urlCache = this.mode === 'history' ? url : `#${url}`
+    history.replaceState({}, "", `${urlCache}${serach && objToSearchUrl(serach) || ''}`)
+    this.data.current = url
   }
   init() {
     this.createRouteMap();
@@ -40,6 +62,7 @@ export default class VueRouter {
   createRouteMap(){
     this.options.routes.forEach(route => {
       this.routeMap[route.path] = route.component
+      this.nameMap[route.name] = route.path
     })
   }
   initComponent(Vue){
