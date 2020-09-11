@@ -6,11 +6,12 @@
 
 ```javascript
 // 以下代码输出
-var a = 1;
-(function a(){
-  a = 2;
-  console.log(a)
-})();
+var arr = [0];
+if(arr){
+  console.log(arr == true)
+} else {
+  console.log(arr)
+}
 ```
 
 
@@ -19,17 +20,19 @@ var a = 1;
 
 #### 思路
 
-* 首先立即执行函数是自己的独立作用域，如果函数名和内部变量冲突，会执行函数本身
+* 判断语句会将数组转换为`Boolean`，也就是`Boolean([0]) == true`
+* 等于语句转化是将两边转化为数字，如果有`boolean`则将其转化为数字，如果有对象，则调用`valueof()或者toString()`获取原始值，`[0] => [0].toString() = "0" => 0` 而`true => 1`，所以是`false`
 
 #### 代码
 
 ```javascript
 // 以下代码输出
-var a = 1;
-(function a(){
-  a = 2;
-  console.log(a) // function a (){...}
-})();
+var arr = [0];
+if(arr){
+  console.log(arr == true) // false
+} else {
+  console.log(arr) // 不会执行
+}
 ```
 
 
