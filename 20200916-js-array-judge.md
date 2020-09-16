@@ -1,4 +1,4 @@
-# js-array-like
+# js-array-judge
 
 > 出自小程序前端面试星球
 
